@@ -1,14 +1,14 @@
 package gofire
 
 import (
-  "net/url"
+	"net/url"
 )
 
 type Message struct {
-  Type, Body string
+	Type, Body string
 }
 
-func (m *Message) Encode() (string) {
-  data := url.Values{"message[type]": {m.Type}, "message[body]": {m.Body}}
-  return data.Encode()
+func (m *Message) Encode() string {
+	data := url.Values{"message[type]": {m.Type}, "message[body]": {m.Body}}
+	return data.Encode()
 }

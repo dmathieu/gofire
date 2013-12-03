@@ -1,4 +1,4 @@
-# gofire
+# gofire [![Build Status](https://travis-ci.org/dmathieu/gofire.png?branch=master)](https://travis-ci.org/dmathieu/gofire)
 
 Go toolkit for the Campfire API
 
