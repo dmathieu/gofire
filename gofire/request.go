@@ -8,9 +8,9 @@ import (
 )
 
 type Request struct {
-	Path    string
-	Message Message
-	Client  *Client
+	path    string
+	message Message
+	client  *Client
 }
 
 func build_data(message Message) *strings.Reader {
@@ -23,10 +23,9 @@ func hashAuth(user, password string) string {
 }
 
 func (r *Request) Post() (*http.Response, error) {
-	client := &http.Client{}
-	req, _ := http.NewRequest("POST", r.Path, build_data(r.Message))
-	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(r.Client.Token, "x")))
+	req, _ := http.NewRequest("POST", r.path, build_data(r.message))
+	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(r.client.token, "x")))
 
-	res, err := client.Do(req)
+	res, err := r.client.http.Do(req)
 	return res, err
 }
