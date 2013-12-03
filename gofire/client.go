@@ -6,20 +6,23 @@ import (
 )
 
 type Client struct {
-	Token, Subdomain, Room string
-	baseURL                string
+	Token   string
+	Room    string
+	baseURL string
 }
 
-func (c *Client) getBaseURL() string {
-	if c.baseURL == "" {
-		c.baseURL = fmt.Sprintf(apiUrl, c.Subdomain)
-	}
+func NewClient(token, subdomain, room string) *Client {
+	url := fmt.Sprintf(apiUrl, subdomain)
 
-	return c.baseURL
+	return NewClientWith(url, token, room)
+}
+
+func NewClientWith(baseURL, token, room string) *Client {
+	return &Client{Token: token, Room: room, baseURL: baseURL}
 }
 
 func (c *Client) getSayUrl() string {
-	return c.getBaseURL() + fmt.Sprintf("/room/%s/speak.json", c.Room)
+	return c.baseURL + fmt.Sprintf("/room/%s/speak.json", c.Room)
 }
 
 func (c *Client) Say(phrase string) (*http.Response, error) {

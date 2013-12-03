@@ -15,7 +15,7 @@ func setup() {
 	// test server
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
-	client = &Client{Token: "token", Subdomain: "gofire", Room: "1234", baseURL: server.URL}
+	client = NewClientWith(server.URL, "token", "1234")
 }
 
 // teardown closes the test HTTP server.
