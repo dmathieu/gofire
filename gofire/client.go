@@ -14,8 +14,15 @@ type Client struct {
 	baseURL string
 }
 
-func NewClient(token, subdomain string) *Client {
-	url := fmt.Sprintf(apiUrl, subdomain)
+func NewClient(token, subdomain string, secure bool) *Client {
+	var scheme string
+	if secure {
+		scheme = "https"
+	} else {
+		scheme = "http"
+	}
+
+	url := fmt.Sprintf(apiUrl, scheme, subdomain)
 
 	return NewClientWith(url, token)
 }
