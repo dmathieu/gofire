@@ -11,7 +11,7 @@ type Room struct {
 }
 
 func (r *Room) getSayUrl() string {
-	return client.baseURL + fmt.Sprintf("/room/%s/speak.json", r.room_id)
+	return r.client.baseURL + fmt.Sprintf("/room/%s/speak.json", r.room_id)
 }
 
 func (r *Room) Say(phrase string) (*http.Response, error) {
