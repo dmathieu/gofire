@@ -1,8 +1,8 @@
 package gofire
 
 import (
+	"encoding/json"
 	"fmt"
-	"net/http"
 )
 
 type Room struct {
@@ -14,9 +14,16 @@ func (r *Room) getSayUrl() string {
 	return r.client.baseURL + fmt.Sprintf("/room/%s/speak.json", r.room_id)
 }
 
-func (r *Room) Say(phrase string) (*http.Response, error) {
-	message := Message{Type: "TextMesage", Body: phrase}
-	request := Request{path: r.getSayUrl(), message: message, client: r.client}
+func (r *Room) Say(phrase string) (*Message, error) {
+	message := Message{Type: "TextMessage", Body: phrase}
+	request := Request{path: r.getSayUrl(), subject: message, client: r.client}
+	response, err := request.Post()
+	if err != nil {
+		panic(err)
+	}
 
-	return request.Post()
+	body := response.ReadBody()
+	err = json.Unmarshal(body, &message)
+
+	return &message, err
 }

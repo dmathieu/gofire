@@ -3,7 +3,6 @@ package gofire
 import (
 	"fmt"
 	"github.com/bmizerany/assert"
-	"io/ioutil"
 	"net/http"
 	"testing"
 )
@@ -20,11 +19,9 @@ func TestSuccessfulSay(t *testing.T) {
 	})
 
 	room := client.NewRoom("1234")
-	res, err := room.Say("Some lambda message")
-	assert.Equal(t, nil, err)
+	message, err := room.Say("Some lambda message")
 
-	defer res.Body.Close()
-	body, err := ioutil.ReadAll(res.Body)
 	assert.Equal(t, nil, err)
-	assert.Equal(t, `{"message": {"body": "hello", "type": "TextMessage"}}`, string(body))
+	assert.Equal(t, "Some lambda message", message.Body)
+	assert.Equal(t, "TextMessage", message.Type)
 }
