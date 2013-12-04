@@ -22,6 +22,6 @@ func TestSuccessfulSay(t *testing.T) {
 	message, err := room.Say("Some lambda message")
 
 	assert.Equal(t, nil, err)
-	assert.Equal(t, "Some lambda message", message.Body)
+	assert.Equal(t, "hello", message.Body)
 	assert.Equal(t, "TextMessage", message.Type)
 }

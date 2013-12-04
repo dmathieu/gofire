@@ -14,16 +14,17 @@ func (r *Room) getSayUrl() string {
 	return r.client.baseURL + fmt.Sprintf("/room/%s/speak.json", r.room_id)
 }
 
-func (r *Room) Say(phrase string) (*Message, error) {
-	message := Message{Type: "TextMessage", Body: phrase}
-	request := Request{path: r.getSayUrl(), subject: message, client: r.client}
+func (r *Room) Say(phrase string) (Message, error) {
+	input := Message{Type: "TextMessage", Body: phrase}
+	request := Request{path: r.getSayUrl(), subject: input, client: r.client}
 	response, err := request.Post()
 	if err != nil {
 		panic(err)
 	}
 
+	var jsonRoot map[string]Message
 	body := response.ReadBody()
-	err = json.Unmarshal(body, &message)
+	err = json.Unmarshal(body, &jsonRoot)
 
-	return &message, err
+	return jsonRoot["message"], err
 }
