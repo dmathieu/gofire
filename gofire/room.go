@@ -15,8 +15,10 @@ func (r *Room) getSayUrl() string {
 }
 
 func (r *Room) Say(phrase string) (Message, error) {
-	input := Message{Type: "TextMessage", Body: phrase}
-	request := Request{path: r.getSayUrl(), subject: input, client: r.client}
+	subject := map[string]Message{
+		"message": Message{Type: "TextMessage", Body: phrase},
+	}
+	request := Request{path: r.getSayUrl(), subject: subject, client: r.client}
 	response, err := request.Post()
 	if err != nil {
 		panic(err)
