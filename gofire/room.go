@@ -3,6 +3,7 @@ package gofire
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 )
 
 type Room struct {
@@ -10,8 +11,14 @@ type Room struct {
 	room_id string
 }
 
+const streamingBaseURL = "https://streaming.campfirenow.com"
+
 func (r *Room) getSayUrl() string {
-	return r.client.baseURL + fmt.Sprintf("/room/%s/speak.json", r.room_id)
+	return fmt.Sprintf("%s/room/%s/speak.json", r.client.baseURL, r.room_id)
+}
+
+func (r *Room) getStreamUrl() (*url.URL, error) {
+	return url.Parse(fmt.Sprintf("%s/room/%s/live.json", streamingBaseURL, r.room_id))
 }
 
 func (r *Room) Say(phrase string) (Message, error) {
@@ -27,6 +34,31 @@ func (r *Room) Say(phrase string) (Message, error) {
 	var jsonRoot map[string]Message
 	body := response.ReadBody()
 	err = json.Unmarshal(body, &jsonRoot)
+	if err != nil {
+		panic(err)
+	}
 
 	return jsonRoot["message"], err
+}
+
+func (r *Room) startListener(channel chan Message) {
+	url, _ := r.getStreamUrl()
+	stream := Streaming{path: url, client: r.client}
+
+	stream.Listen(func(content []byte) {
+		var message Message
+		err := json.Unmarshal(content, &message)
+		if err != nil {
+			panic(err)
+		}
+
+		channel <- message
+	})
+}
+
+func (r *Room) Listen() chan Message {
+	channel := make(chan Message)
+	go r.startListener(channel)
+
+	return channel
 }
