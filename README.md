@@ -5,9 +5,10 @@ Go toolkit for the Campfire API
 **This wrapper is in a very experimental status, and very likely to change.
 Feel free to hop in and propose an improvement though.**
 
-## Example
+## Usage
 
-See [say.go](examples/say.go)
+* [Say something on a room](examples/say.go)
+* [Listen for messages in a room](examples/listen.go)
 
 ## Contributing
 
