@@ -47,12 +47,11 @@ func (r *Room) startListener(channel chan Message) {
 
 	stream.Listen(func(content []byte) {
 		var message Message
-		err := json.Unmarshal(content, &message)
-		if err != nil {
-			panic(err)
-		}
 
-		channel <- message
+		err := json.Unmarshal(content, &message)
+		if err == nil {
+			channel <- message
+		}
 	})
 }
 

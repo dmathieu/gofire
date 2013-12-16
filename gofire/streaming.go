@@ -3,7 +3,6 @@ package gofire
 import (
 	"bufio"
 	"bytes"
-	"crypto/rand"
 	"crypto/tls"
 	"errors"
 	"fmt"
@@ -24,7 +23,7 @@ func (c *Streaming) Close() {
 	c.stale = true
 }
 
-func (c *Streaming) connect() (*http.Response, error) {
+func (c *Streaming) connect() (*bufio.Reader, error) {
 	if c.stale {
 		return nil, errors.New("Cannot connect on a stale client")
 	}
@@ -34,10 +33,10 @@ func (c *Streaming) connect() (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	cf := &tls.Config{Rand: rand.Reader}
-	ssl := tls.Client(tcpConn, cf)
+	ssl := tls.Client(tcpConn, nil)
 
-	c.clientConn = httputil.NewClientConn(ssl, nil)
+	reader := bufio.NewReader(ssl)
+	c.clientConn = httputil.NewClientConn(ssl, reader)
 
 	req, err := http.NewRequest("GET", c.path.String(), nil)
 	if err != nil {
@@ -45,19 +44,18 @@ func (c *Streaming) connect() (*http.Response, error) {
 	}
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(c.client.token, "x")))
 
-	resp, err := c.clientConn.Do(req)
+	_, err = c.clientConn.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
-	return resp, nil
+	return reader, nil
 }
 
 type listenCallback func([]byte)
 
 func (c *Streaming) Listen(fun listenCallback) {
-	resp, err := c.connect()
-	reader := bufio.NewReader(resp.Body)
+	reader, err := c.connect()
 	if err != nil {
 		panic(err)
 	}
