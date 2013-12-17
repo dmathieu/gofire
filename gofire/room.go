@@ -11,14 +11,12 @@ type Room struct {
 	room_id string
 }
 
-const streamingBaseURL = "https://streaming.campfirenow.com"
-
 func (r *Room) getSayUrl() string {
 	return fmt.Sprintf("%s/room/%s/speak.json", r.client.baseURL, r.room_id)
 }
 
 func (r *Room) getStreamUrl() (*url.URL, error) {
-	return url.Parse(fmt.Sprintf("%s/room/%s/live.json", streamingBaseURL, r.room_id))
+	return url.Parse(fmt.Sprintf("%s/room/%s/live.json", r.client.streamingBaseURL, r.room_id))
 }
 
 func (r *Room) Say(phrase string) (Message, error) {

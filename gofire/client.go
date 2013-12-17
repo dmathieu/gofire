@@ -11,8 +11,9 @@ var httpClient = &http.Client{}
 type Client struct {
 	http *http.Client
 
-	token   string
-	baseURL string
+	token            string
+	baseURL          string
+	streamingBaseURL string
 }
 
 func NewClient(token, subdomain string, secure bool) *Client {
@@ -25,11 +26,11 @@ func NewClient(token, subdomain string, secure bool) *Client {
 
 	url := fmt.Sprintf(apiUrl, scheme, subdomain)
 
-	return NewClientWith(url, token)
+	return NewClientWith(url, streamingBaseURL, token)
 }
 
-func NewClientWith(baseURL, token string) *Client {
-	return &Client{token: token, baseURL: baseURL, http: httpClient}
+func NewClientWith(baseURL, streamingBaseURL, token string) *Client {
+	return &Client{token: token, baseURL: baseURL, streamingBaseURL: streamingBaseURL, http: httpClient}
 }
 
 func (c *Client) NewRoom(room_id string) *Room {

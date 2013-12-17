@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 )
 
 type Streaming struct {
@@ -29,11 +30,18 @@ func (c *Streaming) connect() (*bufio.Reader, error) {
 	}
 
 	var tcpConn net.Conn
-	tcpConn, err := net.Dial("tcp", c.path.Host+":443")
+	host := c.path.Host
+	hasPort, _ := regexp.MatchString(":*", host)
+	if !hasPort {
+		host = host + ":443"
+	}
+
+	tcpConn, err := net.Dial("tcp", host)
 	if err != nil {
 		return nil, err
 	}
-	ssl := tls.Client(tcpConn, nil)
+	config := &tls.Config{InsecureSkipVerify: true}
+	ssl := tls.Client(tcpConn, config)
 
 	reader := bufio.NewReader(ssl)
 	c.clientConn = httputil.NewClientConn(ssl, reader)
