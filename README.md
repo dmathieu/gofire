@@ -9,6 +9,7 @@ Feel free to hop in and propose an improvement though.**
 
 * [Say something on a room](examples/say.go)
 * [Listen for messages in a room](examples/listen.go)
+* [Search in rooms](examples/search.go)
 
 ## Contributing
 

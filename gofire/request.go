@@ -19,17 +19,25 @@ func hashAuth(user, password string) string {
 	return base64.StdEncoding.EncodeToString([]byte(a))
 }
 
-func (r *Request) Post() (*Response, error) {
+func (r *Request) Do(verb string) (*Response, error) {
 	marshalled, err := json.Marshal(r.subject)
 	if err != nil {
 		panic(err)
 	}
 	content := bytes.NewReader(marshalled)
 
-	req, _ := http.NewRequest("POST", r.path, content)
+	req, _ := http.NewRequest(verb, r.path, content)
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(r.client.token, "x")))
 
 	res, err := r.client.http.Do(req)
 	response := &Response{http: res}
 	return response, err
+}
+
+func (r *Request) Post() (*Response, error) {
+	return r.Do("POST")
+}
+
+func (r *Request) Get() (*Response, error) {
+	return r.Do("GET")
 }
