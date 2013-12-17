@@ -75,10 +75,8 @@ func (c *Streaming) Listen(fun listenCallback) {
 		}
 
 		line, err := reader.ReadBytes('\r')
-		if err == errors.New("EOF") {
+		if err != nil {
 			c.stale = true
-		} else if err != nil {
-			panic(err)
 		} else {
 			line = bytes.TrimSpace(line)
 
