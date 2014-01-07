@@ -15,6 +15,7 @@ func TestSuccessfulSay(t *testing.T) {
 	mux.HandleFunc("/room/1234/speak.json", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "POST", r.Method)
 		assert.Equal(t, "Basic dG9rZW46eA==", r.Header.Get("Authorization"))
+		assert.Equal(t, "Gofire (42@dmathieu.com)", r.Header.Get("User-Agent"))
 
 		defer r.Body.Close()
 		body, err := ioutil.ReadAll(r.Body)
