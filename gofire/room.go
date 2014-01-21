@@ -21,7 +21,7 @@ func (r *Room) getStreamUrl() (*url.URL, error) {
 
 func (r *Room) Say(phrase string) (Message, error) {
 	subject := map[string]Message{
-		"message": Message{Type: "TextMessage", Body: phrase},
+		"message": Message{Body: phrase},
 	}
 	request := Request{path: r.getSayUrl(), subject: subject, client: r.client}
 	response, err := request.Post()

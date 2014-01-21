@@ -23,7 +23,7 @@ func TestSuccessfulSay(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		assert.Equal(t, `{"message":{"type":"TextMessage","body":"Some lambda message"}}`, string(body))
+		assert.Equal(t, `{"message":{"type":"","body":"Some lambda message"}}`, string(body))
 
 		fmt.Fprint(w, `{"message": {"body": "hello", "type": "TextMessage"}}`)
 	})
