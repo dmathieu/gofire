@@ -28,6 +28,7 @@ func (r *Request) Do(verb string) (*Response, error) {
 
 	req, _ := http.NewRequest(verb, r.path, content)
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(r.client.token, "x")))
+	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("User-Agent", userAgent)
 
 	res, err := r.client.http.Do(req)
