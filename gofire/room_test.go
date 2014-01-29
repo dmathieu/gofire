@@ -28,7 +28,7 @@ func TestSuccessfulSay(t *testing.T) {
 		fmt.Fprint(w, `{"message": {"body": "hello", "type": "TextMessage"}}`)
 	})
 
-	room := client.NewRoom("1234")
+	room := client.NewRoom(1234)
 	message, err := room.Say("Some lambda message")
 
 	assert.Equal(t, nil, err)
@@ -49,7 +49,7 @@ func TestSuccessfulListen(t *testing.T) {
 		fmt.Fprint(w, "\r")
 	})
 
-	room := client.NewRoom("1234")
+	room := client.NewRoom(1234)
 	channel := room.Listen()
 
 	msg := <-channel

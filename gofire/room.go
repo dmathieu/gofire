@@ -7,16 +7,19 @@ import (
 )
 
 type Room struct {
-	client  *Client
-	room_id string
+	Id    int    `json:"id"`
+	Name  string `json:"name"`
+	Topic string `json:"topic"`
+
+	client *Client
 }
 
 func (r *Room) getSayUrl() string {
-	return fmt.Sprintf("%s/room/%s/speak.json", r.client.baseURL, r.room_id)
+	return fmt.Sprintf("%s/room/%d/speak.json", r.client.baseURL, r.Id)
 }
 
 func (r *Room) getStreamUrl() (*url.URL, error) {
-	return url.Parse(fmt.Sprintf("%s/room/%s/live.json", r.client.streamingBaseURL, r.room_id))
+	return url.Parse(fmt.Sprintf("%s/room/%d/live.json", r.client.streamingBaseURL, r.Id))
 }
 
 func (r *Room) Say(phrase string) (Message, error) {

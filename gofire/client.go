@@ -33,19 +33,23 @@ func NewClientWith(baseURL, streamingBaseURL, token string) *Client {
 	return &Client{token: token, baseURL: baseURL, streamingBaseURL: streamingBaseURL, http: httpClient}
 }
 
-func (c *Client) NewRoom(room_id string) *Room {
-	return &Room{room_id: room_id, client: c}
+func (c *Client) NewRoom(room_id int) *Room {
+	return &Room{Id: room_id, client: c}
 }
 
 func (c *Client) getSearchUrl(query string) string {
 	return fmt.Sprintf("%s/search?q=%s&format=json", c.baseURL, query)
 }
 
+func (c *Client) getRoomsUrl() string {
+	return fmt.Sprintf("%s/rooms", c.baseURL)
+}
+
 func (c *Client) Search(query string) ([]Message, error) {
 	request := Request{path: c.getSearchUrl(query), subject: nil, client: c}
 	response, err := request.Get()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var jsonRoot map[string][]Message
@@ -57,4 +61,27 @@ func (c *Client) Search(query string) ([]Message, error) {
 	}
 
 	return jsonRoot["messages"], err
+}
+
+func (c *Client) Rooms() ([]Room, error) {
+	request := Request{path: c.getRoomsUrl(), subject: nil, client: c}
+	response, err := request.Get()
+	if err != nil {
+		panic(err)
+	}
+
+	var jsonRoot map[string][]Room
+	body := response.ReadBody()
+
+	err = json.Unmarshal(body, &jsonRoot)
+	if err != nil {
+		return nil, err
+	}
+
+	rooms := jsonRoot["rooms"]
+	for index := range rooms {
+		rooms[index].client = c
+	}
+
+	return rooms, err
 }
