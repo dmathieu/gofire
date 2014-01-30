@@ -33,8 +33,7 @@ func (r *Room) Say(phrase string) (Message, error) {
 	}
 
 	var jsonRoot map[string]Message
-	body := response.ReadBody()
-	err = json.Unmarshal(body, &jsonRoot)
+	err = response.UnmarshalJSON(&jsonRoot)
 	if err != nil {
 		panic(err)
 	}

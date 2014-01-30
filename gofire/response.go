@@ -1,6 +1,7 @@
 package gofire
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 )
@@ -17,4 +18,9 @@ func (r *Response) ReadBody() []byte {
 	}
 
 	return body
+}
+
+func (r *Response) UnmarshalJSON(subject interface{}) error {
+	body := r.ReadBody()
+	return json.Unmarshal(body, subject)
 }

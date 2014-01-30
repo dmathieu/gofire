@@ -1,7 +1,6 @@
 package gofire
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -53,11 +52,9 @@ func (c *Client) Search(query string) ([]Message, error) {
 	}
 
 	var jsonRoot map[string][]Message
-	body := response.ReadBody()
-
-	err = json.Unmarshal(body, &jsonRoot)
+	err = response.UnmarshalJSON(&jsonRoot)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return jsonRoot["messages"], err
@@ -67,13 +64,11 @@ func (c *Client) Rooms() ([]Room, error) {
 	request := Request{path: c.getRoomsUrl(), subject: nil, client: c}
 	response, err := request.Get()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var jsonRoot map[string][]Room
-	body := response.ReadBody()
-
-	err = json.Unmarshal(body, &jsonRoot)
+	err = response.UnmarshalJSON(&jsonRoot)
 	if err != nil {
 		return nil, err
 	}
