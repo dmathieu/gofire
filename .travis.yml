@@ -2,6 +2,8 @@ language: go
 go:
   - 1.1.2
   - 1.2
+  - release
+  - tip
 install:
   - script/build
 script: script/test
