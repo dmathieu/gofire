@@ -22,23 +22,24 @@ func (r *Room) getStreamUrl() (*url.URL, error) {
 	return url.Parse(fmt.Sprintf("%s/room/%d/live.json", r.client.streamingBaseURL, r.Id))
 }
 
-func (r *Room) Say(phrase string) (Message, error) {
+func (r *Room) Say(phrase string) (*Message, error) {
 	subject := map[string]Message{
 		"message": Message{Body: phrase},
 	}
 	request := Request{path: r.getSayUrl(), subject: subject, client: r.client}
 	response, err := request.Post()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	var jsonRoot map[string]Message
 	err = response.UnmarshalJSON(&jsonRoot)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return jsonRoot["message"], err
+	message := jsonRoot["message"]
+	return &message, nil
 }
 
 func (r *Room) startListener(channel chan Message) {

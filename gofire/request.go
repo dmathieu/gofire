@@ -23,13 +23,13 @@ func hashAuth(user, password string) string {
 func (r *Request) Do(verb string) (*Response, error) {
 	marshalled, err := json.Marshal(r.subject)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	content := bytes.NewReader(marshalled)
 
 	req, err := http.NewRequest(verb, r.path, content)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Basic %s", hashAuth(r.client.token, "x")))
@@ -40,10 +40,11 @@ func (r *Request) Do(verb string) (*Response, error) {
 
 	if err == nil && res.StatusCode < 200 || res.StatusCode > 209 {
 		err = errors.New(fmt.Sprintf("Invalid status code: %s", res.Status))
+		return nil, err
 	}
 
 	response := &Response{http: res}
-	return response, err
+	return response, nil
 }
 
 func (r *Request) Post() (*Response, error) {

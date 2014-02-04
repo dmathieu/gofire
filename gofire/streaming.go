@@ -62,10 +62,10 @@ func (c *Streaming) connect() (*bufio.Reader, error) {
 
 type listenCallback func([]byte)
 
-func (c *Streaming) Listen(fun listenCallback) {
+func (c *Streaming) Listen(fun listenCallback) error {
 	reader, err := c.connect()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	for {
@@ -83,4 +83,6 @@ func (c *Streaming) Listen(fun listenCallback) {
 			fun(line)
 		}
 	}
+
+	return nil
 }
