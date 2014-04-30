@@ -7,8 +7,12 @@ import (
 
 var httpClient = &http.Client{}
 
+type httpClientInterface interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 type Client struct {
-	http *http.Client
+	http httpClientInterface
 
 	token            string
 	baseURL          string
