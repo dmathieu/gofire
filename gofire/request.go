@@ -37,6 +37,9 @@ func (r *Request) Do(verb string) (*Response, error) {
 	req.Header.Set("User-Agent", userAgent)
 
 	res, err := r.client.http.Do(req)
+	if err != nil {
+		return nil, err
+	}
 
 	if err == nil && res.StatusCode < 200 || res.StatusCode > 209 {
 		err = errors.New(fmt.Sprintf("Invalid status code: %s", res.Status))
