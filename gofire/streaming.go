@@ -13,13 +13,10 @@ import (
 	"strings"
 )
 
-type dialFunc func(network, address string) (net.Conn, error)
-
 type Streaming struct {
 	client     *Client
 	path       *url.URL
 	clientConn *httputil.ClientConn
-	dial       dialFunc
 	stale      bool
 }
 
@@ -44,7 +41,7 @@ func (c *Streaming) connect() (*bufio.Reader, error) {
 		host = host + ":443"
 	}
 
-	tcpConn, err := c.dial("tcp", host)
+	tcpConn, err := net.Dial("tcp", host)
 	if err != nil {
 		return nil, err
 	}

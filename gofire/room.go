@@ -3,7 +3,6 @@ package gofire
 import (
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/url"
 )
 
@@ -48,7 +47,7 @@ func (r *Room) startListener(channel chan Message) error {
 	if err != nil {
 		return err
 	}
-	stream := Streaming{path: url, dial: net.Dial, client: r.client}
+	stream := Streaming{path: url, client: r.client}
 
 	return stream.Listen(func(content []byte) {
 		var message Message
