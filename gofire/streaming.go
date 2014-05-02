@@ -10,18 +10,27 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"regexp"
+	"strings"
 )
+
+type dialFunc func(network, address string) (net.Conn, error)
 
 type Streaming struct {
 	client     *Client
 	path       *url.URL
 	clientConn *httputil.ClientConn
+	dial       dialFunc
 	stale      bool
 }
 
 func (c *Streaming) Close() {
 	c.stale = true
+}
+
+func hasPort(host string) bool {
+	parts := strings.Split(host, ":")
+	// make sure there is 1 colon, and that either side of the colon is non-empty
+	return len(parts) == 2 && parts[0] != "" && parts[1] != ""
 }
 
 func (c *Streaming) connect() (*bufio.Reader, error) {
@@ -31,12 +40,11 @@ func (c *Streaming) connect() (*bufio.Reader, error) {
 
 	var tcpConn net.Conn
 	host := c.path.Host
-	hasPort, _ := regexp.MatchString(":*", host)
-	if !hasPort {
+	if !hasPort(host) {
 		host = host + ":443"
 	}
 
-	tcpConn, err := net.Dial("tcp", host)
+	tcpConn, err := c.dial("tcp", host)
 	if err != nil {
 		return nil, err
 	}
