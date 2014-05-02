@@ -1,7 +1,6 @@
 package gofire
 
 import (
-	"log"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -44,14 +43,14 @@ func (r *Room) Say(phrase string) (*Message, error) {
 	return &message, nil
 }
 
-func (r *Room) startListener(channel chan Message) {
+func (r *Room) startListener(channel chan Message) error {
 	url, err := r.getStreamUrl()
 	if err != nil {
-		log.Fatal("Room.startListener():", err)
+		return err
 	}
 	stream := Streaming{path: url, dial: net.Dial, client: r.client}
 
-	stream.Listen(func(content []byte) {
+	return stream.Listen(func(content []byte) {
 		var message Message
 
 		err := json.Unmarshal(content, &message)
@@ -61,9 +60,12 @@ func (r *Room) startListener(channel chan Message) {
 	})
 }
 
-func (r *Room) Listen() chan Message {
+func (r *Room) Listen() (chan Message, error) {
 	channel := make(chan Message)
-	go r.startListener(channel)
+	var err error
+	go func() {
+		err = r.startListener(channel)
+	}()
 
-	return channel
+	return channel, err
 }

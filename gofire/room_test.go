@@ -50,7 +50,10 @@ func TestSuccessfulListen(t *testing.T) {
 	})
 
 	room := client.NewRoom(1234)
-	channel := room.Listen()
+	channel, err := room.Listen()
+	if err != nil {
+		t.Fatal("Unexpected error [room.Listen()]:", err)
+	}
 
 	msg := <-channel
 	assert.Equal(t, "hello", msg.Body)
