@@ -42,11 +42,14 @@ func (r *Room) Say(phrase string) (*Message, error) {
 	return &message, nil
 }
 
-func (r *Room) startListener(channel chan Message) {
-	url, _ := r.getStreamUrl()
+func (r *Room) startListener(channel chan Message) error {
+	url, err := r.getStreamUrl()
+	if err != nil {
+		return err
+	}
 	stream := Streaming{path: url, client: r.client}
 
-	stream.Listen(func(content []byte) {
+	return stream.Listen(func(content []byte) {
 		var message Message
 
 		err := json.Unmarshal(content, &message)
@@ -56,9 +59,12 @@ func (r *Room) startListener(channel chan Message) {
 	})
 }
 
-func (r *Room) Listen() chan Message {
+func (r *Room) Listen() (chan Message, error) {
 	channel := make(chan Message)
-	go r.startListener(channel)
+	var err error
+	go func() {
+		err = r.startListener(channel)
+	}()
 
-	return channel
+	return channel, err
 }

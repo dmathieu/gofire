@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"regexp"
+	"strings"
 )
 
 type Streaming struct {
@@ -24,6 +24,12 @@ func (c *Streaming) Close() {
 	c.stale = true
 }
 
+func hasPort(host string) bool {
+	parts := strings.Split(host, ":")
+	// make sure there is 1 colon, and that either side of the colon is non-empty
+	return len(parts) == 2 && parts[0] != "" && parts[1] != ""
+}
+
 func (c *Streaming) connect() (*bufio.Reader, error) {
 	if c.stale {
 		return nil, errors.New("Cannot connect on a stale client")
@@ -31,8 +37,7 @@ func (c *Streaming) connect() (*bufio.Reader, error) {
 
 	var tcpConn net.Conn
 	host := c.path.Host
-	hasPort, _ := regexp.MatchString(":*", host)
-	if !hasPort {
+	if !hasPort(host) {
 		host = host + ":443"
 	}
 
